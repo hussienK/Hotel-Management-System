@@ -35,12 +35,11 @@ $tables = [
     )",
     "CREATE TABLE Hotels (
         HotelID INT AUTO_INCREMENT PRIMARY KEY,
-        OwnerID INT NOT NULL,
         Name VARCHAR(150) NOT NULL,
         Address TEXT NOT NULL,
         Phone VARCHAR(20),
-        Wallet DECIMAL(10, 2) DEFAULT 0.00,
-        FOREIGN KEY (OwnerID) REFERENCES Users(UserID) ON DELETE CASCADE
+        Email VARCHAR(150) UNIQUE NOT NULL,
+        Wallet DECIMAL(10, 2) DEFAULT 0.00
     )",
     "CREATE TABLE Rooms (
         RoomID INT AUTO_INCREMENT PRIMARY KEY,
