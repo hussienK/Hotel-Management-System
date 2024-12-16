@@ -6,12 +6,20 @@
     <title>Hotel Login</title>
     <link rel="stylesheet" href="../styles/login.css">
 </head>
+<?php
+session_start();
+if (isset($_SESSION['error'])) {
+    echo "<p class='error-msg'>" . $_SESSION['error'] . "</p>";
+    unset($_SESSION['error']); // Clear error after displaying
+}
+?>
+
 <body>
     <div class="login-container">
         <div class="form-container">
             <h1>Hotel Owner Login</h1>
             <p>Manage your hotel bookings, rooms, and more.</p>
-            <form action="process_login.php" method="POST">
+            <form action="../controller/loginProcess.php" method="POST">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Enter your email" required>
                 

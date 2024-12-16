@@ -30,7 +30,7 @@ $tables = [
         FullName VARCHAR(100) NOT NULL,
         Email VARCHAR(150) UNIQUE NOT NULL,
         Password VARCHAR(255) NOT NULL,
-        AccountType ENUM('Regular', 'Admin') NOT NULL,
+        AccountType VARCHAR(100) NOT NULL,
         Wallet DECIMAL(10, 2) DEFAULT 0.00
     )",
     "CREATE TABLE Hotels (
