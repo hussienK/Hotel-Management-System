@@ -12,7 +12,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Create database
+// Create database if it doesn't exist
 $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
 if ($conn->query($sql) === TRUE) {
     echo "Database created successfully\n";
@@ -20,12 +20,12 @@ if ($conn->query($sql) === TRUE) {
     echo "Error creating database: " . $conn->error;
 }
 
-// Select database
+// Select the database
 $conn->select_db($dbname);
 
 // SQL statements to create tables
 $tables = [
-    "CREATE TABLE Users (
+    "CREATE TABLE IF NOT EXISTS Users (
         UserID INT AUTO_INCREMENT PRIMARY KEY,
         FullName VARCHAR(100) NOT NULL,
         Email VARCHAR(150) UNIQUE NOT NULL,
@@ -33,7 +33,7 @@ $tables = [
         AccountType VARCHAR(100) NOT NULL,
         Wallet DECIMAL(10, 2) DEFAULT 0.00
     )",
-    "CREATE TABLE Hotels (
+    "CREATE TABLE IF NOT EXISTS Hotels (
         HotelID INT AUTO_INCREMENT PRIMARY KEY,
         Name VARCHAR(150) NOT NULL,
         Address TEXT NOT NULL,
@@ -41,16 +41,17 @@ $tables = [
         Email VARCHAR(150) UNIQUE NOT NULL,
         Wallet DECIMAL(10, 2) DEFAULT 0.00
     )",
-    "CREATE TABLE Rooms (
+    "CREATE TABLE IF NOT EXISTS Rooms (
         RoomID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
         RoomCapacity INT NOT NULL,
         Price DECIMAL(10, 2) NOT NULL,
+        RoomNb INT NOT NULL,
         Availability BOOLEAN DEFAULT TRUE,
         Description TEXT,
         FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE
     )",
-    "CREATE TABLE Bookings (
+    "CREATE TABLE IF NOT EXISTS Bookings (
         BookingID INT AUTO_INCREMENT PRIMARY KEY,
         UserID INT NOT NULL,
         RoomID INT NOT NULL,
@@ -61,7 +62,7 @@ $tables = [
         FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
         FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID) ON DELETE CASCADE
     )",
-    "CREATE TABLE Offers (
+    "CREATE TABLE IF NOT EXISTS Offers (
         OfferID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
         Title VARCHAR(150),
@@ -71,14 +72,14 @@ $tables = [
         EndDate DATE NOT NULL,
         FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE
     )",
-    "CREATE TABLE Transactions (
+    "CREATE TABLE IF NOT EXISTS Transactions (
         TransactionID INT AUTO_INCREMENT PRIMARY KEY,
         BookingID INT NOT NULL,
         Amount DECIMAL(10, 2) NOT NULL,
         TransactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE CASCADE
     )",
-    "CREATE TABLE AdminLogs (
+    "CREATE TABLE IF NOT EXISTS AdminLogs (
         LogID INT AUTO_INCREMENT PRIMARY KEY,
         AdminID INT NOT NULL,
         Action TEXT NOT NULL,

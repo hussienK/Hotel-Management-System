@@ -27,12 +27,12 @@ $owner_name = $_SESSION['FullName']; // This should be retrieved from the sessio
         <div class="sidebar">
             <h2><?php echo $hotel_name; ?></h2>
             <ul>
-                <li><a href="manage_rooms.php">Manage Rooms</a></li>
+                <li><a href="Rooms.php">Manage Rooms</a></li>
                 <li><a href="manage_bookings.php">Manage Bookings</a></li>
                 <li><a href="transactions.php">Transactions</a></li>
                 <li><a href="offers.php">Offers & Discounts</a></li>
                 <li><a href="profile.php">Profile Settings</a></li>
-                <li><a href="logout.php">Logout</a></li>
+                <li><a style="background-color:rgb(241, 34, 34) " href="../controller/logout.php">Logout</a></li>
             </ul>
         </div>
 
