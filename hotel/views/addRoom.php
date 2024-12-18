@@ -30,14 +30,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'];
     $availability = isset($_POST['availability']) ? 1 : 0;
 
-    $insert_sql = "INSERT INTO Rooms (HotelID, RoomNb, RoomCapacity, Price, Availability, Description) 
-                   VALUES (?, ?, ?, ?, ?, ?)";
+    // Handle image upload
+    if (isset($_FILES['room_image']) && $_FILES['room_image']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = '../uploads/rooms/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        $image_name = basename($_FILES['room_image']['name']);
+        $image_path = $upload_dir . uniqid() . '_' . $image_name;
+
+        if (move_uploaded_file($_FILES['room_image']['tmp_name'], $image_path)) {
+            $image_path = str_replace('../', '', $image_path); // Store relative path
+        } else {
+            $error_message = "Failed to upload the image.";
+        }
+    } else {
+        $image_path = null;
+    }
+
+    // Insert room details into the database
+    $insert_sql = "INSERT INTO Rooms (HotelID, RoomNb, RoomCapacity, Price, Availability, Description, Image) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)";
     $insert_stmt = $conn->prepare($insert_sql);
-    $insert_stmt->bind_param('iiidis', $hotel_id, $room_number, $capacity, $price, $availability, $description);
+    $insert_stmt->bind_param('iiidiss', $hotel_id, $room_number, $capacity, $price, $availability, $description, $image_path);
 
     if ($insert_stmt->execute()) {
-        $success_message = "Room added successfully!";
-        header("Location: rooms.php?message=Room-is-added");
+        header("Location: rooms.php?message=Room+is+added+successfully");
     } else {
         $error_message = "Error adding room: " . $conn->error;
     }
@@ -63,7 +82,7 @@ $conn->close();
         <?php if (isset($error_message)): ?>
             <p class="error"><?php echo $error_message; ?></p>
         <?php endif; ?>
-        <form action="addRoom.php" method="POST">
+        <form action="addRoom.php" method="POST" enctype="multipart/form-data">
             <label for="room_number">Room Number:</label>
             <input type="text" id="room_number" name="room_number" placeholder="Enter room number" required>
             
@@ -78,7 +97,10 @@ $conn->close();
             
             <label for="availability">Availability:</label>
             <input type="checkbox" id="availability" name="availability" checked>
-            
+
+            <label for="room_image">Upload Room Image:</label>
+            <input type="file" id="room_image" name="room_image" accept="image/*">
+
             <button type="submit">Add Room</button>
         </form>
         <a href="rooms.php" class="back-link">Back to Rooms</a>

@@ -7,7 +7,6 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'Hotel') {
     exit;
 }
 
-
 // Database connection
 $conn = new mysqli('localhost', 'root', '', 'hotel_management');
 if ($conn->connect_error) {
@@ -49,6 +48,7 @@ $rooms_result = $rooms_stmt->get_result();
             <table>
                 <thead>
                     <tr>
+                        <th>Room Image</th>
                         <th>Room Number</th>
                         <th>Capacity</th>
                         <th>Price</th>
@@ -60,11 +60,17 @@ $rooms_result = $rooms_stmt->get_result();
                 <tbody>
                     <?php while ($room = $rooms_result->fetch_assoc()) { ?>
                         <tr>
+                            <!-- Room Image -->
+                            <td>
+                                <img style="max-width: 80px;" src="../<?php echo htmlspecialchars($room['Image']); ?>" alt="Room Image" class="room-img">
+                            </td>
+                            <!-- Other Room Details -->
                             <td><?php echo htmlspecialchars($room['RoomNb']); ?></td>
                             <td><?php echo htmlspecialchars($room['RoomCapacity']); ?></td>
                             <td><?php echo htmlspecialchars($room['Price']); ?></td>
                             <td><?php echo $room['Availability'] ? 'Available' : 'Unavailable'; ?></td>
-                            <td><?php echo htmlspecialchars($room['Description']); ?></td>
+                            <!-- Limit Description Characters -->
+                            <td><?php echo htmlspecialchars(substr($room['Description'], 0, 150)) . '...'; ?></td>
                             <td>
                                 <!-- Remove Button -->
                                 <form action="../controller/removeRoom.php" method="POST" class="action-form">

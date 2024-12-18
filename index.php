@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Options</title>
-    <link rel="stylesheet" href="hotel/styles/main.css">
+    <link rel="stylesheet" href="shared/main.css">
 </head>
 <body>
     <div class="container">

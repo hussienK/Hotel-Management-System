@@ -42,14 +42,15 @@ $tables = [
         Wallet DECIMAL(10, 2) DEFAULT 0.00
     )",
     "CREATE TABLE IF NOT EXISTS Rooms (
-        RoomID INT AUTO_INCREMENT PRIMARY KEY,
-        HotelID INT NOT NULL,
-        RoomCapacity INT NOT NULL,
-        Price DECIMAL(10, 2) NOT NULL,
-        RoomNb INT NOT NULL,
-        Availability BOOLEAN DEFAULT TRUE,
-        Description TEXT,
-        FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE
+    RoomID INT AUTO_INCREMENT PRIMARY KEY,
+    HotelID INT NOT NULL,
+    RoomCapacity INT NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL,
+    RoomNb INT NOT NULL,
+    Availability BOOLEAN DEFAULT TRUE,
+    Description TEXT,
+    Image VARCHAR(255) DEFAULT NULL, -- New column to store image path
+    FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE
     )",
     "CREATE TABLE IF NOT EXISTS Bookings (
         BookingID INT AUTO_INCREMENT PRIMARY KEY,

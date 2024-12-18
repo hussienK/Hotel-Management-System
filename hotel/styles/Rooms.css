@@ -1,110 +1,104 @@
-/* General Styling */
+/* Basic styling for the manage rooms page */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
-    color: #333;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 20px auto;
+    width: 80%;
+    margin: 0 auto;
     padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    background-color: #2a3d66;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
 }
 
-header h1 {
-    color: #444;
+h1 {
     margin: 0;
 }
 
 .add-room-btn {
-    background-color: #28a745;
-    color: #fff;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
     text-decoration: none;
-    padding: 10px 15px;
     border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    font-weight: bold;
 }
 
 .add-room-btn:hover {
-    background-color: #218838;
+    background-color: #45a049;
 }
 
-/* Table Styling */
-.rooms-list h2 {
-    margin-bottom: 10px;
-    color: #555;
+.rooms-list {
+    margin-top: 30px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    background-color: white;
+    margin-bottom: 20px;
 }
 
-table th, table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+table, th, td {
+    border: 1px solid #ddd;
 }
 
-table th {
+th, td {
+    padding: 15px;
+    text-align: center;
+}
+
+th {
     background-color: #f2f2f2;
-    color: #333;
+    font-weight: bold;
 }
 
-table tr:hover {
-    background-color: #f9f9f9;
+td img {
+    max-width: 80px;
+    height: auto;
 }
 
-table td {
-    color: #555;
+td .remove-btn,
+td .edit-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    margin-right: 5px;
+    border-radius: 5px;
 }
 
-/* Action Buttons Styling */
+td .remove-btn:hover {
+    background-color: #d32f2f;
+}
+
+td .edit-btn {
+    background-color: #ffa500;
+}
+
+td .edit-btn:hover {
+    background-color: #ff8c00;
+}
+
 .action-form {
-    display: inline-block;
-    margin: 0;
+    display: inline;
 }
 
-.remove-btn {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
+@media (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
 
-.remove-btn:hover {
-    background-color: #c82333;
-}
-
-.edit-btn {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-.edit-btn:hover {
-    background-color: #0056b3;
+    .container {
+        width: 95%;
+    }
 }

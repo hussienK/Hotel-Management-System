@@ -43,14 +43,14 @@ if ($result->num_rows > 0) {
         // Invalid password
         echo "<script>
                 alert('Incorrect password. Please try again.');
-                window.location.href = 'login.php';
+                window.location.href = '../views/login.php';
               </script>";
     }
 } else {
     // User not found
     echo "<script>
             alert('No account found with that email. Please register first.');
-            window.location.href = 'register.php';
+            window.location.href = '../views/register.php';
           </script>";
 }
 
