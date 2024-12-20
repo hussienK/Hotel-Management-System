@@ -2,7 +2,7 @@
 session_start();
 
 // Check if the user is logged in and has the correct account type
-if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'Hotel') {
+if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'HotelOwner') {
     header('Location: login.php');
     exit;
 }
@@ -98,6 +98,17 @@ $conn->close();
 </head>
 <body>
     <div class="container">
+    <a href="rooms.php" style="     
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    " >← Back</a>
         <h1>Edit Room</h1>
         <?php if (isset($success_message)): ?>
             <p class="success"><?php echo $success_message; ?></p>

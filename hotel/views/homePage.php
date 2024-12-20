@@ -7,12 +7,67 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'HotelOwner') {
     exit;
 }
 
-// Assuming data will be fetched from the database in the future
-$hotel_name = "Hotel Name"; // This will be replaced with data from the database
-$owner_name = $_SESSION['FullName']; // This should be retrieved from the session after login
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "hotel_management";
 
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Retrieve the hotel name and wallet for the logged-in user
+$hotel_name = "";
+$owner_name = $_SESSION['FullName']; // User's full name from the session
+$user_id = $_SESSION['UserID'];
+$wallet = 0.0;
+$available_rooms = 0;
+$bookings_today = 0;
+
+$sql = "SELECT h.Name, h.Wallet 
+        FROM Hotels h
+        JOIN Users u ON u.UserID = ?
+        WHERE h.HotelID = u.UserID"; // Assuming UserID in Users matches HotelID in Hotels
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($hotel_name, $wallet);
+$stmt->fetch();
+$stmt->close();
+
+// Count available rooms for the hotel
+$sql = "SELECT COUNT(*) 
+        FROM Rooms 
+        WHERE HotelID = ? AND Availability = 1";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($available_rooms);
+$stmt->fetch();
+$stmt->close();
+
+// Count bookings today
+$sql = "SELECT COUNT(*) 
+        FROM Bookings b
+        JOIN Rooms r ON b.RoomID = r.RoomID
+        WHERE r.HotelID = ? AND DATE(b.BookingDate) = CURDATE()";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($bookings_today);
+$stmt->fetch();
+$stmt->close();
+
+$conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,34 +80,34 @@ $owner_name = $_SESSION['FullName']; // This should be retrieved from the sessio
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h2><?php echo $hotel_name; ?></h2>
+            <h2><?php echo htmlspecialchars($hotel_name, ENT_QUOTES, 'UTF-8'); ?></h2>
             <ul>
                 <li><a href="Rooms.php">Manage Rooms</a></li>
                 <li><a href="manage_bookings.php">Manage Bookings</a></li>
                 <li><a href="transactions.php">Transactions</a></li>
                 <li><a href="offers.php">Offers & Discounts</a></li>
                 <li><a href="profile.php">Profile Settings</a></li>
-                <li><a style="background-color:rgb(241, 34, 34) " href="../controller/logout.php">Logout</a></li>
+                <li><a style="background-color:rgb(241, 34, 34)" href="../controller/logout.php">Logout</a></li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <h1>Welcome, <?php echo $owner_name; ?></h1>
+            <h1>Welcome, <?php echo htmlspecialchars($owner_name, ENT_QUOTES, 'UTF-8'); ?></h1>
             <p>Your hotel management dashboard.</p>
 
             <div class="dashboard-stats">
                 <div class="stat">
                     <h3>Bookings Today</h3>
-                    <p>Data will be displayed here</p>
+                    <p><?php echo htmlspecialchars($bookings_today, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
                 <div class="stat">
                     <h3>Total Revenue</h3>
-                    <p>Data will be displayed here</p>
+                    <p><?php echo number_format($wallet, 2); ?> USD</p>
                 </div>
                 <div class="stat">
                     <h3>Available Rooms</h3>
-                    <p>Data will be displayed here</p>
+                    <p><?php echo htmlspecialchars($available_rooms, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
             </div>
         </div>

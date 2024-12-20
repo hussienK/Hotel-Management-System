@@ -2,7 +2,7 @@
 session_start();
 
 // Check if the user is logged in and is a hotel owner
-if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'Hotel') {
+if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'HotelOwner') {
     header('Location: login.php');
     exit;
 }
