@@ -55,7 +55,7 @@ if ($result->num_rows > 0) {
             $mail->Host = 'smtp.gmail.com.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'hotel.finder.website@gmail.com';
-            $mail->Password = '12345678Hotel'; // Use an App Password
+            $mail->Password = ''; // Use an App Password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
