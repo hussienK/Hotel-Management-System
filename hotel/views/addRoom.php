@@ -67,15 +67,17 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Room</title>
     <link rel="stylesheet" href="../styles/addRoom.css">
 </head>
+
 <body>
     <div class="container">
-    <a href="rooms.php" style="     
+        <a href="rooms.php" style="     
         background-color: #007bff;
         color: white;
         text-decoration: none;
@@ -85,7 +87,7 @@ $conn->close();
         font-weight: bold;
         transition: background-color 0.3s ease, transform 0.2s ease;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    " >← Back</a>
+    ">← Back</a>
         <h1>Add a New Room</h1>
         <?php if (isset($success_message)): ?>
             <p class="success"><?php echo $success_message; ?></p>
@@ -96,16 +98,16 @@ $conn->close();
         <form action="addRoom.php" method="POST" enctype="multipart/form-data">
             <label for="room_number">Room Number:</label>
             <input type="text" id="room_number" name="room_number" placeholder="Enter room number" required>
-            
+
             <label for="capacity">Room Capacity:</label>
-            <input type="number" id="capacity" name="capacity" placeholder="Enter room capacity" required>
-            
+            <input type="number" id="capacity" name="capacity" placeholder="Enter room capacity" min="1" required>
+
             <label for="price">Price per Night:</label>
-            <input type="text" id="price" name="price" placeholder="Enter price per night" required>
-            
+            <input type="text" id="price" name="price" placeholder="Enter price per night" min="1" required>
+
             <label for="description">Description:</label>
             <textarea id="description" name="description" placeholder="Enter room description" required></textarea>
-            
+
             <label for="availability">Availability:</label>
             <input type="checkbox" id="availability" name="availability" checked>
 
@@ -117,4 +119,5 @@ $conn->close();
         <a href="rooms.php" class="back-link">Back to Rooms</a>
     </div>
 </body>
+
 </html>

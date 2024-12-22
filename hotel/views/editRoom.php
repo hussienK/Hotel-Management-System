@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = isset($_POST['price']) ? $_POST['price'] : null;
     $description = isset($_POST['description']) ? $_POST['description'] : null;
     $availability = isset($_POST['availability']) ? $_POST['availability'] : null;
-    
+
     // Handle image upload
     if (isset($_FILES['room_image']) && $_FILES['room_image']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = '../uploads/rooms/';
@@ -90,15 +90,17 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Room</title>
     <link rel="stylesheet" href="../styles/editRoom.css">
 </head>
+
 <body>
     <div class="container">
-    <a href="rooms.php" style="     
+        <a href="rooms.php" style="     
         background-color: #007bff;
         color: white;
         text-decoration: none;
@@ -108,7 +110,7 @@ $conn->close();
         font-weight: bold;
         transition: background-color 0.3s ease, transform 0.2s ease;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    " >← Back</a>
+    ">← Back</a>
         <h1>Edit Room</h1>
         <?php if (isset($success_message)): ?>
             <p class="success"><?php echo $success_message; ?></p>
@@ -119,19 +121,19 @@ $conn->close();
         <form action="editRoom.php" method="POST" enctype="multipart/form-data">
             <!-- Hidden field for room_id -->
             <input type="hidden" name="room_id" value="<?php echo htmlspecialchars($room['RoomID']); ?>">
-            
+
             <label for="room_number">Room Number:</label>
             <input type="text" id="room_number" name="room_number" value="<?php echo htmlspecialchars($room['RoomNb']); ?>" required>
-            
+
             <label for="capacity">Room Capacity:</label>
-            <input type="number" id="capacity" name="capacity" value="<?php echo htmlspecialchars($room['RoomCapacity']); ?>" required>
-            
+            <input type="number" id="capacity" name="capacity" value="<?php echo htmlspecialchars($room['RoomCapacity']); ?>" min="1" required>
+
             <label for="price">Price per Night:</label>
-            <input type="text" id="price" name="price" value="<?php echo htmlspecialchars($room['Price']); ?>" required>
-            
+            <input type="text" id="price" name="price" value="<?php echo htmlspecialchars($room['Price']); ?>" min="1" required>
+
             <label for="description">Description:</label>
             <textarea id="description" name="description" required><?php echo htmlspecialchars($room['Description']); ?></textarea>
-            
+
             <label for="availability">Availability:</label>
             <select id="availability" name="availability">
                 <option value="1" <?php echo $room['Availability'] ? 'selected' : ''; ?>>Available</option>
@@ -153,4 +155,5 @@ $conn->close();
         <a href="rooms.php" class="back-link">Back to Rooms</a>
     </div>
 </body>
+
 </html>

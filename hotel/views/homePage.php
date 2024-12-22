@@ -83,7 +83,7 @@ $conn->close();
             <h2><?php echo htmlspecialchars($hotel_name, ENT_QUOTES, 'UTF-8'); ?></h2>
             <ul>
                 <li><a href="Rooms.php">Manage Rooms</a></li>
-                <li><a href="manage_bookings.php">Manage Bookings</a></li>
+                <li><a href="manageBookings.php">Manage Bookings</a></li>
                 <li><a href="transactions.php">Transactions</a></li>
                 <li><a href="offers.php">Offers & Discounts</a></li>
                 <li><a href="profile.php">Profile Settings</a></li>
