@@ -17,13 +17,14 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'HotelOwner') {
 }
 
 // Get booking ID from query string
-$booking_id = $_GET['booking_id'];
+$booking_id = intval($_GET['booking_id']);
 
-// Get hotel ID from logged-in user
-$hotel_id = $_SESSION['UserID']; // Assuming UserID is linked to the hotel
+// Get HotelID from session
+$hotel_id = $_SESSION['UserID'];
 
 // Fetch booking details
-$sql = "SELECT b.BookingID, b.UserID, b.RoomID, b.TotalPrice, b.CheckInDate, b.CheckOutDate, r.RoomNb, r.Price, u.FullName, u.Email
+$sql = "SELECT b.BookingID, b.UserID, b.RoomID, b.TotalPrice, b.CheckInDate, b.CheckOutDate,
+               r.RoomNb, u.FullName, u.Email
         FROM Bookings b
         JOIN Rooms r ON b.RoomID = r.RoomID
         JOIN Users u ON b.UserID = u.UserID
@@ -35,53 +36,47 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $booking = $result->fetch_assoc();
-    $user_id = $booking['UserID'];
-    $user_email = $booking['Email'];
-    $room_price = $booking['Price'];
-    $total_price = $booking['TotalPrice'];
 
-    // Reject booking
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Add room price to user's wallet
-        $update_wallet_sql = "UPDATE Users SET Wallet = Wallet + ? WHERE UserID = ?";
-        $update_stmt = $conn->prepare($update_wallet_sql);
-        $update_stmt->bind_param('di', $room_price, $user_id);
+    // Delete the booking and update the room status transactionally
+    $conn->begin_transaction();
+    try {
+        $delete_booking_sql = "DELETE FROM Bookings WHERE BookingID = ?";
+        $delete_stmt = $conn->prepare($delete_booking_sql);
+        $delete_stmt->bind_param('i', $booking_id);
+        $delete_stmt->execute();
+
+        $update_room_sql = "UPDATE Rooms SET Availability = 1 WHERE RoomID = ?";
+        $update_stmt = $conn->prepare($update_room_sql);
+        $update_stmt->bind_param('i', $booking['RoomID']);
         $update_stmt->execute();
 
-        // Send rejection email to user
+        $conn->commit();
+
+        // Send rejection email
         $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'hotel.finder.website@gmail.com';
-            $mail->Password = ''; // Use an App Password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'hotel.finder.website@gmail.com';
+        $mail->Password = '12345678Hotel'; // Use a secure App Password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
 
-            $mail->setFrom('hotel.finder.website@gmail.com', 'Hotel Management');
-            $mail->addAddress($user_email);
-            $mail->isHTML(true);
-            $mail->Subject = 'Booking Rejected';
-            $mail->Body = "Unfortunately, your booking has been rejected.<br>Booking Details:<br>Room: {$booking['RoomNb']}<br>Check-in: {$booking['CheckInDate']}<br>Check-out: {$booking['CheckOutDate']}<br>Amount refunded: $$room_price";
+        $mail->setFrom('hotel.finder.website@gmail.com', 'Hotel Management');
+        $mail->addAddress($booking['Email']);
+        $mail->isHTML(true);
+        $mail->Subject = 'Booking Rejection Notice';
+        $mail->Body = "Dear {$booking['FullName']},<br>We regret to inform you that your booking request for Room {$booking['RoomNb']} has been rejected.<br>If you have any questions, please contact support.";
 
-            $mail->send();
+        $mail->send();
 
-            // Update room status to available
-            $update_room_sql = "UPDATE Rooms SET Availability = 1 WHERE RoomID = ?";
-            $update_stmt = $conn->prepare($update_room_sql);
-            $update_stmt->bind_param('i', $booking['RoomID']);
-            $update_stmt->execute();
-
-            // Redirect back to manage bookings page
-            header("Location:../views/manageBookings.php?message=Booking rejected successfully");
-        } catch (Exception $e) {
-            echo "Error sending email: {$mail->ErrorInfo}";
-        }
+        header("Location: ../views/manageBookings.php?message=Booking rejected successfully");
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo "Error: {$e->getMessage()}";
     }
 } else {
-    echo "Booking not found or you do not have permission to manage it.";
+    echo "Booking not found or permission denied.";
 }
-
 $conn->close();
 ?>
