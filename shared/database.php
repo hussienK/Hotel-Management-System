@@ -60,9 +60,10 @@ $tables = [
         CheckInDate DATE NOT NULL,
         CheckOutDate DATE NOT NULL,
         TotalPrice DECIMAL(10, 2) NOT NULL,
+        Status VARCHAR(50) NOT NULL,
         FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
         FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID) ON DELETE CASCADE
-    )",
+        )",
     "CREATE TABLE IF NOT EXISTS Offers (
         OfferID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
