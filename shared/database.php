@@ -34,13 +34,15 @@ $tables = [
         Wallet DECIMAL(10, 2) DEFAULT 0.00
     )",
     "CREATE TABLE IF NOT EXISTS Hotels (
-        HotelID INT AUTO_INCREMENT PRIMARY KEY,
-        Name VARCHAR(150) NOT NULL,
-        Address TEXT NOT NULL,
-        Phone VARCHAR(20),
-        Email VARCHAR(150) UNIQUE NOT NULL,
-        Wallet DECIMAL(10, 2) DEFAULT 0.00
-    )",
+    HotelID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(150) NOT NULL,
+    Address TEXT NOT NULL,
+    Phone VARCHAR(20),
+    Email VARCHAR(150) UNIQUE NOT NULL,
+    Wallet DECIMAL(10, 2) DEFAULT 0.00,
+    OwnerUserID INT NOT NULL,
+ FOREIGN KEY (OwnerUserID) REFERENCES Users(UserID)
+)",
     "CREATE TABLE IF NOT EXISTS Rooms (
         RoomID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
@@ -67,12 +69,15 @@ $tables = [
     "CREATE TABLE IF NOT EXISTS Offers (
         OfferID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
+        RoomID INT NOT NULL,
         Title VARCHAR(150),
         Description TEXT,
         DiscountPercentage DECIMAL(5, 2),
         StartDate DATE NOT NULL,
         EndDate DATE NOT NULL,
-        FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE
+        FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE,
+        FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID) ON DELETE CASCADE
+    
     )",
     "CREATE TABLE IF NOT EXISTS Transactions (
         TransactionID INT AUTO_INCREMENT PRIMARY KEY,

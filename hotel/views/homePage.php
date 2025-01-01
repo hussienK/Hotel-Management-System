@@ -31,7 +31,7 @@ $bookings_today = 0;
 
 $sql = "SELECT h.Name, h.Wallet 
         FROM Hotels h
-        JOIN Users u ON u.UserID = ?
+        JOIN Users u ON u.UserID = ? 
         WHERE h.HotelID = u.UserID"; // Assuming UserID in Users matches HotelID in Hotels
 
 $stmt = $conn->prepare($sql);
@@ -53,11 +53,13 @@ $stmt->bind_result($available_rooms);
 $stmt->fetch();
 $stmt->close();
 
-// Count bookings today
+// Count bookings today with 'ACCEPTED' status
 $sql = "SELECT COUNT(*) 
         FROM Bookings b
         JOIN Rooms r ON b.RoomID = r.RoomID
-        WHERE r.HotelID = ? AND DATE(b.BookingDate) = CURDATE()";
+        WHERE r.HotelID = ? 
+        AND DATE(b.BookingDate) = CURDATE()
+        AND b.Status = 'ACCEPTED'"; // Filter bookings with 'ACCEPTED' status
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
