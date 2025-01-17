@@ -2,8 +2,7 @@
 session_start();
 require '../../vendor/autoload.php'; // Composer autoload
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+use SendGrid\Mail\Mail;
 
 // Database connection
 $conn = new mysqli('localhost', 'root', '', 'hotel_management');
@@ -23,7 +22,7 @@ $booking_id = intval($_GET['booking_id']);
 $hotel_id = $_SESSION['UserID'];
 
 // Fetch booking details
-$sql = "SELECT b.BookingID, b.UserID, b.RoomID, b.TotalPrice, b.CheckInDate, b.CheckOutDate,
+$sql = "SELECT b.BookingID, b.UserID, b.RoomID, b.TotalPrice, b.CheckInDate, b.CheckOutDate, 
                r.RoomNb, u.FullName, u.Email
         FROM Bookings b
         JOIN Rooms r ON b.RoomID = r.RoomID
@@ -37,46 +36,63 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $booking = $result->fetch_assoc();
 
-    // Delete the booking and update the room status transactionally
+    // Start transaction
     $conn->begin_transaction();
     try {
-        $delete_booking_sql = "DELETE FROM Bookings WHERE BookingID = ?";
-        $delete_stmt = $conn->prepare($delete_booking_sql);
-        $delete_stmt->bind_param('i', $booking_id);
-        $delete_stmt->execute();
+        // 1. Fetch current wallet balance of the user
+        $user_wallet_sql = "SELECT Wallet FROM Users WHERE UserID = ?";
+        $user_wallet_stmt = $conn->prepare($user_wallet_sql);
+        $user_wallet_stmt->bind_param('i', $booking['UserID']);
+        $user_wallet_stmt->execute();
+        $user_wallet_result = $user_wallet_stmt->get_result();
 
-        $update_room_sql = "UPDATE Rooms SET Availability = 1 WHERE RoomID = ?";
-        $update_stmt = $conn->prepare($update_room_sql);
-        $update_stmt->bind_param('i', $booking['RoomID']);
-        $update_stmt->execute();
+        if ($user_wallet_result->num_rows > 0) {
+            $user_wallet = $user_wallet_result->fetch_assoc();
+            $new_wallet_balance = $user_wallet['Wallet'] + $booking['TotalPrice'];
 
-        $conn->commit();
+            // 2. Update the user's wallet balance
+            $update_wallet_sql = "UPDATE Users SET Wallet = ? WHERE UserID = ?";
+            $update_wallet_stmt = $conn->prepare($update_wallet_sql);
+            $update_wallet_stmt->bind_param('di', $new_wallet_balance, $booking['UserID']);
+            $update_wallet_stmt->execute();
 
-        // Send rejection email
-        $mail = new PHPMailer(true);
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'hotel.finder.website@gmail.com';
-        $mail->Password = '12345678Hotel'; // Use a secure App Password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
+            // 3. Update the booking status to REJECTED
+            $update_booking_sql = "UPDATE Bookings SET Status = 'REJECTED' WHERE BookingID = ?";
+            $update_stmt = $conn->prepare($update_booking_sql);
+            $update_stmt->bind_param('i', $booking_id);
+            $update_stmt->execute();
 
-        $mail->setFrom('hotel.finder.website@gmail.com', 'Hotel Management');
-        $mail->addAddress($booking['Email']);
-        $mail->isHTML(true);
-        $mail->Subject = 'Booking Rejection Notice';
-        $mail->Body = "Dear {$booking['FullName']},<br>We regret to inform you that your booking request for Room {$booking['RoomNb']} has been rejected.<br>If you have any questions, please contact support.";
+            // Commit the transaction
+            $conn->commit();
 
-        $mail->send();
+            // Send rejection email via SendGrid API
+            $email = new Mail();
+            $email->setFrom(".", "Hotel Management");
+            $email->setSubject("Booking Rejection Notice");
+            $email->addTo($booking['Email'], $booking['FullName']);
+            $email->addContent("text/html", "Dear {$booking['FullName']},<br>We regret to inform you that your booking request for Room {$booking['RoomNb']} has been rejected.<br>If you have any questions, please contact support.");
 
-        header("Location: ../views/manageBookings.php?message=Booking rejected successfully");
+            // Initialize SendGrid client and send the email
+            $sendgrid = new \SendGrid('.'); // Use your SendGrid API key here
+            $response = $sendgrid->send($email);
+
+            // Check if email was sent successfully
+            if ($response->statusCode() == 202) {
+                header("Location: ../views/manageBookings.php?message=Booking rejected successfully");
+            } else {
+                echo "Error sending email: " . $response->body();
+            }
+        } else {
+            echo "User wallet not found.";
+        }
     } catch (Exception $e) {
+        // Rollback in case of error
         $conn->rollback();
         echo "Error: {$e->getMessage()}";
     }
 } else {
     echo "Booking not found or permission denied.";
 }
+
 $conn->close();
 ?>
