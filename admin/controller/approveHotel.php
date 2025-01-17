@@ -31,17 +31,20 @@ if (isset($_GET['id'])) {
     if ($result->num_rows > 0) {
         $hotelRequest = $result->fetch_assoc();
 
-        // Insert data into the Hotels table
-        $sqlInsertHotel = "INSERT INTO Hotels (Name, Address, Phone, Email, Wallet) VALUES (?, ?, ?, ?, 0)";
-        $stmtInsertHotel = $conn->prepare($sqlInsertHotel);
-        $stmtInsertHotel->bind_param("ssss", $hotelRequest['HotelName'], $hotelRequest['Address'], $hotelRequest['Phone'], $hotelRequest['Email']);
-        $stmtInsertHotel->execute();
-
-        // Insert the user into the Users table with the same email and details
+       // Insert the user into the Users table with the same email and details
         $sqlInsertUser = "INSERT INTO Users (FullName, Email, Password, AccountType, Wallet) VALUES (?, ?, ?, 'HotelOwner', 0)";
         $stmtInsertUser = $conn->prepare($sqlInsertUser);
         $stmtInsertUser->bind_param("sss", $hotelRequest['FullName'], $hotelRequest['Email'], $hotelRequest['Password']);
         $stmtInsertUser->execute();
+
+        // Retrieve the newly inserted UserID
+        $ownerUserID = $conn->insert_id;
+
+        // Insert data into the Hotels table, linking it to the newly created user
+        $sqlInsertHotel = "INSERT INTO Hotels (Name, Address, Phone, Email, Wallet, OwnerUserID) VALUES (?, ?, ?, ?, 0, ?)";
+        $stmtInsertHotel = $conn->prepare($sqlInsertHotel);
+        $stmtInsertHotel->bind_param("ssssi", $hotelRequest['HotelName'], $hotelRequest['Address'], $hotelRequest['Phone'], $hotelRequest['Email'], $ownerUserID);
+        $stmtInsertHotel->execute();
 
         // Delete the request after approval
         $sqlDelete = "DELETE FROM PendingHotel WHERE PendingID = ?";
@@ -52,7 +55,8 @@ if (isset($_GET['id'])) {
         echo "<script>
                 alert('Hotel request approved successfully.');
                 window.location.href = '../views/hotelRequest.php';
-              </script>";
+            </script>";
+
     } else {
         echo "<script>
                 alert('Request not found.');
