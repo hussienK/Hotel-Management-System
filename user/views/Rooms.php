@@ -20,13 +20,18 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'user') {
     <div class="w-1/4 bg-blue-700 h-screen sticky text-white p-6 flex flex-col">
         <h1 class="text-3xl font-bold mb-8 text-center">Dashboard</h1>
         <ul class="space-y-6">
+			<li>
+                <a href="./Rooms.php" class="block text-lg font-medium hover:text-blue-300 transition duration-300">
+                    Rooms
+                </a>
+            </li>
             <li>
                 <a href="./profile.php" class="block text-lg font-medium hover:text-blue-300 transition duration-300">
                     Profile
                 </a>
             </li>
             <li>
-                <a href="./logout.php" class="block text-lg font-medium hover:text-blue-300 transition duration-300">
+                <a href="../Controller/logoutProcess.php" class="block text-lg font-medium hover:text-blue-300 transition duration-300">
                     Logout
                 </a>
             </li>
