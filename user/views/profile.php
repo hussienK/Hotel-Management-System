@@ -30,6 +30,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows == 1) {
     $user = $result->fetch_assoc();
+    $_SESSION['Wallet'] = $user['Wallet']; // Update session wallet
 } else {
     echo "Error fetching user data.";
     exit();

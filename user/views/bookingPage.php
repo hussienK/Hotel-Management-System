@@ -22,6 +22,12 @@ $image = $_GET['image'];
 
 // Get user's wallet balance
 $wallet = $_SESSION['Wallet']; // Assuming wallet is stored in session
+
+// Check for error messages
+if (isset($_SESSION['error'])) {
+    $errorMessage = $_SESSION['error'];
+    unset($_SESSION['error']); // Clear the error after displaying
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,8 +74,15 @@ $wallet = $_SESSION['Wallet']; // Assuming wallet is stored in session
     <div class="flex-grow p-6">
         <!-- User Wallet -->
         <div class="absolute top-6 right-6 bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md">
-            <p class="text-lg font-semibold">Wallet: $<?php echo $wallet ?></p>
+            <p class="text-lg font-semibold">Wallet: $<?php echo number_format($wallet, 2); ?></p>
         </div>
+
+        <!-- Display Error Message -->
+        <?php if (isset($errorMessage)): ?>
+            <div class="bg-red-500 text-white px-4 py-2 rounded mb-4">
+                <?php echo htmlspecialchars($errorMessage); ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Booking Details -->
         <div class="container mx-auto">
@@ -88,19 +101,19 @@ $wallet = $_SESSION['Wallet']; // Assuming wallet is stored in session
                         <h2 class="text-3xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($hotelName); ?></h2>
                         <p class="text-gray-600 mb-2"><strong>Room Number:</strong> <?php echo htmlspecialchars($roomNb); ?></p>
                         <p class="text-gray-600 mb-2"><strong>Capacity:</strong> <?php echo htmlspecialchars($capacity); ?> people</p>
-                        <p class="text-gray-600 mb-2"><strong>Price:</strong> $<?php echo $price; ?></p>
+                        <p class="text-gray-600 mb-2"><strong>Price:</strong> $<?php echo $price;?></p>
                         <?php if ($discount > 0): ?>
                             <p class="text-red-500 font-semibold mb-2">
                                 <strong>Discount:</strong> <?php echo htmlspecialchars($discount); ?>% OFF
                             </p>
-                            <p class="text-gray-800 font-semibold"><strong>Final Price:</strong> $<?php echo number_format($pricePerNight, 2); ?></p>
+                            <p class="text-gray-800 font-semibold"><strong>Final Price:</strong> $<?php echo number_format($finalPrice, 2); ?></p>
                         <?php endif; ?>
                         <p class="text-gray-600 mt-4"><?php echo htmlspecialchars($description); ?></p>
                     </div>
                 </div>
 
                 <!-- Booking Form -->
-                <form method="POST" action="#" class="p-6">
+                <form method="POST" action="../controller/bookProcess.php" class="p-6">
                     <h3 class="text-2xl font-bold text-gray-800 mb-4">Booking Details</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -126,7 +139,7 @@ $wallet = $_SESSION['Wallet']; // Assuming wallet is stored in session
                             >
                         </div>
                         <div>
-                            <label for="totalPrice" class="block text-gray-700 font-medium mb-2">Total Price</label>
+                            <label for="totalPrice" class="block text-gray-700 font-medium mb-2">Total Price $</label>
                             <input 
                                 type="text" 
                                 name="totalPrice" 
@@ -137,6 +150,7 @@ $wallet = $_SESSION['Wallet']; // Assuming wallet is stored in session
                             >
                         </div>
                     </div>
+                    <input type="hidden" name="roomID" value="<?php echo htmlspecialchars($roomID); ?>">
                     <button 
                         type="submit" 
                         class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
@@ -148,35 +162,35 @@ $wallet = $_SESSION['Wallet']; // Assuming wallet is stored in session
         </div>
     </div>
 
-        <script>
+    <script>
         // Function to calculate total price
         function calculateTotalPrice() {
-            const checkInDate = document.getElementById("checkInDate").value;
-            const checkOutDate = document.getElementById("checkOutDate").value;
-            const finalPrice = <?php echo $finalPrice; ?>;
+    const checkInDate = document.getElementById("checkInDate").value;
+    const checkOutDate = document.getElementById("checkOutDate").value;
+    const finalPrice = <?php echo $finalPrice; ?>;
 
-            if (checkInDate && checkOutDate) {
-                const startDate = new Date(checkInDate);
-                const endDate = new Date(checkOutDate);
+    if (checkInDate && checkOutDate) {
+        const startDate = new Date(checkInDate);
+        const endDate = new Date(checkOutDate);
 
-                // Calculate the number of nights
-                const timeDiff = endDate - startDate;
-                const totalNights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        // Calculate the number of nights
+        const timeDiff = endDate - startDate;
+        const totalNights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
-                // Ensure the check-out date is after the check-in date
-                if (totalNights > 0) {
-                    const totalPrice = totalNights * finalPrice;
-                    const formatter = new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                    });
+        // Ensure the check-out date is after the check-in date
+        if (totalNights > 0) {
+            const totalPrice = totalNights * finalPrice;
+            const formatter = new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: 2, // Show up to 2 decimal places
+                minimumFractionDigits: 2, // Ensure 2 decimal places
+            });
 
-                    document.getElementById("totalPrice").value = formatter.format(totalPrice);
-                } else {
-                    document.getElementById("totalPrice").value = "Invalid Dates";
-                }
-            }
+            document.getElementById("totalPrice").value = formatter.format(totalPrice); // Format without a dollar sign
+        } else {
+            document.getElementById("totalPrice").value = "Invalid Dates";
         }
+    }
+}
     </script>
 </body>
 </html>
