@@ -42,7 +42,7 @@ $sql = "
     SELECT * 
     FROM Bookings 
     WHERE RoomID = ? 
-    AND Status = 'ON' 
+    AND (Status = 'ON' OR Status = 'ACCEPTED')
     AND (CheckInDate < ? AND CheckOutDate > ?)
 ";
 $stmt = $conn->prepare($sql);

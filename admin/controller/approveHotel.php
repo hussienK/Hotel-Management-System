@@ -15,9 +15,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Only admin should have access to this page
-
-
 if (isset($_GET['id'])) {
     $pendingID = $_GET['id'];
 
@@ -31,19 +28,19 @@ if (isset($_GET['id'])) {
     if ($result->num_rows > 0) {
         $hotelRequest = $result->fetch_assoc();
 
-       // Insert the user into the Users table with the same email and details
+        // Insert the user into the Users table
         $sqlInsertUser = "INSERT INTO Users (FullName, Email, Password, AccountType, Wallet) VALUES (?, ?, ?, 'HotelOwner', 0)";
         $stmtInsertUser = $conn->prepare($sqlInsertUser);
         $stmtInsertUser->bind_param("sss", $hotelRequest['FullName'], $hotelRequest['Email'], $hotelRequest['Password']);
         $stmtInsertUser->execute();
 
-        // Retrieve the newly inserted UserID
-        $ownerUserID = $conn->insert_id;
+        // Get the last inserted UserID
+        $userID = $conn->insert_id;
 
-        // Insert data into the Hotels table, linking it to the newly created user
-        $sqlInsertHotel = "INSERT INTO Hotels (Name, Address, Phone, Email, Wallet, OwnerUserID) VALUES (?, ?, ?, ?, 0, ?)";
+        // Insert data into the Hotels table using the same UserID
+        $sqlInsertHotel = "INSERT INTO Hotels (HotelID, Name, Address, Phone, Email, Wallet) VALUES (?, ?, ?, ?, ?, 0)";
         $stmtInsertHotel = $conn->prepare($sqlInsertHotel);
-        $stmtInsertHotel->bind_param("ssssi", $hotelRequest['HotelName'], $hotelRequest['Address'], $hotelRequest['Phone'], $hotelRequest['Email'], $ownerUserID);
+        $stmtInsertHotel->bind_param("issss", $userID, $hotelRequest['HotelName'], $hotelRequest['Address'], $hotelRequest['Phone'], $hotelRequest['Email']);
         $stmtInsertHotel->execute();
 
         // Delete the request after approval
@@ -56,18 +53,17 @@ if (isset($_GET['id'])) {
                 alert('Hotel request approved successfully.');
                 window.location.href = '../views/hotelRequest.php';
             </script>";
-
     } else {
         echo "<script>
                 alert('Request not found.');
                 window.location.href = '../views/hotelRequest.php';
-              </script>";
+            </script>";
     }
 } else {
     echo "<script>
             alert('Invalid request.');
             window.location.href = '../views/hotelRequest.php';
-          </script>";
+        </script>";
 }
 
 $conn->close();
