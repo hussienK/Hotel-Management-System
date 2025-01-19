@@ -20,7 +20,7 @@ $email = $_POST['email'];
 $password = $_POST['password'];
 
 // Validate user credentials
-$sql = "SELECT UserID, FullName, Password, AccountType FROM Users WHERE Email = ?";
+$sql = "SELECT UserID, FullName, Password, AccountType, Wallet FROM Users WHERE Email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -35,6 +35,7 @@ if ($result->num_rows > 0) {
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['FullName'] = $user['FullName'];
         $_SESSION['AccountType'] = $user['AccountType'];
+        $_SESSION['Wallet'] = $user['Wallet'];
 
         // Redirect to the homepage
         header("Location: ../views/Rooms.php");

@@ -121,7 +121,7 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'user') {
 				// Base SQL query with default sorting (offers first)
 				$sql = "
 					SELECT 
-						Rooms.RoomID, Rooms.Image, Rooms.RoomCapacity, Rooms.Price, Rooms.RoomNb, Rooms.Description, 
+						Rooms.RoomID, Rooms.Image, Rooms.Availability, Rooms.RoomCapacity, Rooms.Price, Rooms.RoomNb, Rooms.Description, 
 						Hotels.Name AS HotelName, 
 						Offers.DiscountPercentage, Offers.Title AS OfferTitle,
 						IF(Offers.DiscountPercentage IS NOT NULL, 1, 0) AS HasOffer
@@ -192,9 +192,43 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'user') {
 								</div>";
 						}
 
+                        $finalPrice = $row['DiscountPercentage'] ? $row['Price'] * (1 - $row['DiscountPercentage'] / 100) : $row['Price'];
+
+                        $bookButton = '';
+                        if ($row['Availability'] == true) {
+                            $bookButton = "
+                            <form method='GET' action='bookingPage.php' class='absolute bottom-2 right-2'>
+                                <input type='hidden' name='roomID' value='" . htmlspecialchars($row['RoomID']) . "'>
+                                <input type='hidden' name='hotelName' value='" . htmlspecialchars($row['HotelName']) . "'>
+                                <input type='hidden' name='roomNb' value='" . htmlspecialchars($row['RoomNb']) . "'>
+                                <input type='hidden' name='capacity' value='" . htmlspecialchars($row['RoomCapacity']) . "'>
+                                <input type='hidden' name='price' value='" . number_format($row['Price'], 2) . "'>
+                                <input type='hidden' name='discount' value='" . htmlspecialchars($row['DiscountPercentage'] ?? 0) . "'>
+                                <input type='hidden' name='finalPrice' value='" . number_format($finalPrice, 2) . "'>
+                                <input type='hidden' name='description' value='" . htmlspecialchars($row['Description']) . "'>
+                                <input type='hidden' name='image' value='" . htmlspecialchars($row['Image']) . "'>
+                                <button type='submit' class='bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition'>
+                                    Book Room
+                                </button>
+                            </form>
+                            ";
+                        }
+                        else
+                        {
+                            $bookButton = "
+                            <form method='POST' action='bookRoom.php' class='absolute bottom-2 right-2'>
+                                <input type='hidden' name='roomID' value='" . htmlspecialchars($row['RoomID']) . "'>
+                                <input type='hidden' name='finalPrice' value='" . number_format($finalPrice, 2) . "'>
+                                <button type='button' class='bg-gray-600 text-white px-6 py-2 rounded-lg transition opacity-50 cursor-not-allowed' disabled>
+                                    Unavailable
+                                </button>
+                            </form>";
+                        }
+
 						echo "
 						<div class='relative flex bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300'>
 							$offerBadge
+                            $bookButton
 							<img 
 								class='flex-none w-48 h-48 object-cover' 
 								src='../../hotel/" . htmlspecialchars($row['Image']) . "' 
@@ -225,5 +259,6 @@ if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'user') {
             </div>
         </div>
     </div>
+
 </body>
 </html>
