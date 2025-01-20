@@ -28,6 +28,12 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
+    
+    if ($user['IsBanned']) {
+        $_SESSION['error'] = "Your account has been banned. Please contact support for assistance.";
+        header("Location: ../views/login.php");
+        exit;
+    }
 
     // Verify password
     if (password_verify($password, $user['Password'])) {

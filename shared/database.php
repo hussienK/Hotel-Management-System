@@ -26,13 +26,14 @@ $conn->select_db($dbname);
 // SQL statements to create tables
 $tables = [
     "CREATE TABLE IF NOT EXISTS Users (
-        UserID INT AUTO_INCREMENT PRIMARY KEY,
-        FullName VARCHAR(100) NOT NULL,
-        Email VARCHAR(150) UNIQUE NOT NULL,
-        Password VARCHAR(255) NOT NULL,
-        AccountType VARCHAR(100) NOT NULL,
-        Wallet DECIMAL(10, 2) DEFAULT 0.00
-    )",
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    FullName VARCHAR(100) NOT NULL,
+    Email VARCHAR(150) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    AccountType VARCHAR(100) NOT NULL,
+    Wallet DECIMAL(10, 2) DEFAULT 0.00,
+    IsBanned BOOLEAN DEFAULT FALSE
+)",
     "CREATE TABLE IF NOT EXISTS Hotels (
     HotelID INT PRIMARY KEY,
     Name VARCHAR(150) NOT NULL,

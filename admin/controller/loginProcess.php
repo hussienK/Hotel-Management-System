@@ -28,22 +28,26 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
-    if ($user['IsBanned']) {
-        $_SESSION['error'] = "Your account has been banned. Please contact support for assistance.";
-        header("Location: ../views/login.php");
-        exit;
-    }
 
     // Verify password
     if (password_verify($password, $user['Password'])) {
-        // Store user information in session
-        $_SESSION['UserID'] = $user['UserID'];
-        $_SESSION['FullName'] = $user['FullName'];
-        $_SESSION['AccountType'] = $user['AccountType'];
+        // Check if the user is an admin
+        if ($user['AccountType'] === 'Admin') {
+            // Store user information in session
+            $_SESSION['UserID'] = $user['UserID'];
+            $_SESSION['FullName'] = $user['FullName'];
+            $_SESSION['AccountType'] = $user['AccountType'];
 
-        // Redirect to the home page
-        header("Location: ../views/homePage.php");
-        exit;
+            // Redirect to the admin home page
+            header("Location: ../views/homePage.php");
+            exit;
+        } else {
+            // Not an admin
+            echo "<script>
+                    alert('Access denied. Admins only.');
+                    window.location.href = '../views/login.php';
+                  </script>";
+        }
     } else {
         // Invalid password
         echo "<script>
