@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Login</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="../styles/login.css">
 </head>
 <?php
@@ -17,8 +17,7 @@ if (isset($_SESSION['error'])) {
 <body>
     <div class="login-container">
         <div class="form-container">
-            <h1>Hotel Owner Login</h1>
-            <p>Manage your hotel bookings, rooms, and more.</p>
+            <h1>Admin Login</h1>
             <form action="../controller/loginProcess.php" method="POST">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Enter your email" required>
@@ -29,7 +28,7 @@ if (isset($_SESSION['error'])) {
                 <button type="submit" class="login-btn">Login</button>
             </form>
             <div class="register-link">
-                <p>Don't have an account? <a href="register.php">Register here</a></p>
+                <p>Don't have an account? Contact An Admin.</p>
             </div>
         </div>
     </div>

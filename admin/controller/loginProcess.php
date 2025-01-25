@@ -56,11 +56,10 @@ if ($result->num_rows > 0) {
               </script>";
     }
 } else {
-    // User not found
     echo "<script>
-            alert('No account found with that email. Please register first.');
-            window.location.href = '../views/register.php';
-          </script>";
+            alert('Admin Not Found');
+            window.location.href = '../views/login.php';
+    </script>";
 }
 
 $stmt->close();
