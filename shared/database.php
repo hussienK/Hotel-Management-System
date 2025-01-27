@@ -85,13 +85,7 @@ $tables = [
         TransactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE CASCADE
     )",
-    "CREATE TABLE IF NOT EXISTS AdminLogs (
-        LogID INT AUTO_INCREMENT PRIMARY KEY,
-        AdminID INT NOT NULL,
-        Action TEXT NOT NULL,
-        ActionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (AdminID) REFERENCES Users(UserID) ON DELETE CASCADE
-    )",
+    
     "CREATE TABLE IF NOT EXISTS PendingHotel (
         PendingID INT AUTO_INCREMENT PRIMARY KEY,
         FullName VARCHAR(100) NOT NULL,
