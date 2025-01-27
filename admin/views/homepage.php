@@ -5,8 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Home</title>
     <link rel="stylesheet" href="../styles/homePage.css">
+    <style>
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .logout-btn:hover {
+            background-color: #e60000;
+        }
+    </style>
 </head>
 <body>
+    <a href="../controller/logout.php" class="logout-btn">Logout</a>
     <div class="container">
         <h1>Welcome, Admin</h1>
         <div class="card-container">

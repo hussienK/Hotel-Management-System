@@ -82,7 +82,7 @@ require_once '../controller/manageUsersProcess.php';
                     <input type="email" id="edit_email" name="email" placeholder="Email" required>
                     <select id="edit_account_type" name="account_type" required>
                         <option value="Admin">Admin</option>
-                        <option value="User">User</option>
+                        <option value="Guest">Guest</option>
                         <option value="HotelOwner">Hotel Owner</option>
                     </select>
                     <label>

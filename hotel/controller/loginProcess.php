@@ -20,7 +20,7 @@ $email = $_POST['email'];
 $password = $_POST['password'];
 
 // Validate user credentials
-$sql = "SELECT UserID, FullName, Password, AccountType FROM Users WHERE Email = ?";
+$sql = "SELECT UserID, FullName, Password, AccountType, IsBanned FROM Users WHERE Email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -28,6 +28,8 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
+
+    // Check if the account is banned
     if ($user['IsBanned']) {
         $_SESSION['error'] = "Your account has been banned. Please contact support for assistance.";
         header("Location: ../views/login.php");
@@ -36,14 +38,22 @@ if ($result->num_rows > 0) {
 
     // Verify password
     if (password_verify($password, $user['Password'])) {
-        // Store user information in session
-        $_SESSION['UserID'] = $user['UserID'];
-        $_SESSION['FullName'] = $user['FullName'];
-        $_SESSION['AccountType'] = $user['AccountType'];
+        if ($user['AccountType'] === 'hotelOwner') {
+            // Store user information in session
+            $_SESSION['UserID'] = $user['UserID'];
+            $_SESSION['FullName'] = $user['FullName'];
+            $_SESSION['AccountType'] = $user['AccountType'];
 
-        // Redirect to the home page
-        header("Location: ../views/homePage.php");
-        exit;
+            // Redirect to the home page
+            header("Location: ../views/homePage.php");
+            exit;
+        } else {
+            // Not a hotel owner
+            echo "<script>
+                    alert('Access denied. Hotel owners only.');
+                    window.location.href = '../views/login.php';
+                  </script>";
+        }
     } else {
         // Invalid password
         echo "<script>

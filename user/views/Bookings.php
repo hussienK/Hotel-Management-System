@@ -2,7 +2,7 @@
 session_start();
 
 // Check if the user is logged in
-if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'user') {
+if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'Guest') {
     header('Location: login.php');
     exit;
 }

@@ -1,10 +1,6 @@
 <?php
 
 // Check if the user is logged in and is an admin
-if (!isset($_SESSION['UserID']) || $_SESSION['AccountType'] !== 'Admin') {
-    header("Location: ../views/login.php");
-    exit;
-}
 
 // Database connection
 $servername = "localhost";

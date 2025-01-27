@@ -2,7 +2,6 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "hotel_management";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password);
@@ -13,6 +12,7 @@ if ($conn->connect_error) {
 }
 
 // Create database if it doesn't exist
+$dbname = "hotel_management"; 
 $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
 if ($conn->query($sql) === TRUE) {
     echo "Database created successfully\n";
@@ -26,24 +26,23 @@ $conn->select_db($dbname);
 // SQL statements to create tables
 $tables = [
     "CREATE TABLE IF NOT EXISTS Users (
-    UserID INT AUTO_INCREMENT PRIMARY KEY,
-    FullName VARCHAR(100) NOT NULL,
-    Email VARCHAR(150) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL,
-    AccountType VARCHAR(100) NOT NULL,
-    Wallet DECIMAL(10, 2) DEFAULT 0.00,
-    IsBanned BOOLEAN DEFAULT FALSE
-)",
+        UserID INT AUTO_INCREMENT PRIMARY KEY,
+        FullName VARCHAR(100) NOT NULL,
+        Email VARCHAR(150) UNIQUE NOT NULL,
+        Password VARCHAR(255) NOT NULL, 
+        AccountType ENUM('Admin', 'Guest', 'HotelOwner') NOT NULL DEFAULT 'Guest', 
+        Wallet DECIMAL(10, 2) DEFAULT 0.00,
+        IsBanned BOOLEAN DEFAULT FALSE
+    )",
     "CREATE TABLE IF NOT EXISTS Hotels (
-    HotelID INT PRIMARY KEY,
-    Name VARCHAR(150) NOT NULL,
-    Address TEXT NOT NULL,
-    Phone VARCHAR(20),
-    Email VARCHAR(150) UNIQUE NOT NULL,
-    Wallet DECIMAL(10, 2) DEFAULT 0.00,
-    FOREIGN KEY (HotelID) REFERENCES Users(UserID)
-)
-)",
+        HotelID INT PRIMARY KEY,
+        Name VARCHAR(150) NOT NULL,
+        Address TEXT NOT NULL,
+        Phone VARCHAR(20),
+        Email VARCHAR(150) UNIQUE NOT NULL,
+        Wallet DECIMAL(10, 2) DEFAULT 0.00,
+        FOREIGN KEY (HotelID) REFERENCES Users(UserID) ON DELETE CASCADE 
+    )",
     "CREATE TABLE IF NOT EXISTS Rooms (
         RoomID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
@@ -59,14 +58,14 @@ $tables = [
         BookingID INT AUTO_INCREMENT PRIMARY KEY,
         UserID INT NOT NULL,
         RoomID INT NOT NULL,
-        BookingDate DATE NOT NULL,
+        BookingDate DATE NOT NULL DEFAULT CURRENT_TIMESTAMP, 
         CheckInDate DATE NOT NULL,
         CheckOutDate DATE NOT NULL,
         TotalPrice DECIMAL(10, 2) NOT NULL,
-        Status VARCHAR(50) NOT NULL,
+        Status ENUM('Pending', 'Confirmed', 'Cancelled') NOT NULL DEFAULT 'Pending', 
         FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
         FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID) ON DELETE CASCADE
-        )",
+    )",
     "CREATE TABLE IF NOT EXISTS Offers (
         OfferID INT AUTO_INCREMENT PRIMARY KEY,
         HotelID INT NOT NULL,
@@ -78,7 +77,6 @@ $tables = [
         EndDate DATE NOT NULL,
         FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE,
         FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID) ON DELETE CASCADE
-    
     )",
     "CREATE TABLE IF NOT EXISTS Transactions (
         TransactionID INT AUTO_INCREMENT PRIMARY KEY,
@@ -101,7 +99,7 @@ $tables = [
         Email VARCHAR(150) UNIQUE NOT NULL,
         Address TEXT NOT NULL,
         Phone VARCHAR(20) NOT NULL,
-        Password VARCHAR(255) NOT NULL,  -- Add the Password field here
+        Password VARCHAR(255) NOT NULL, 
         RequestDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )"
 ];

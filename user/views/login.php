@@ -10,7 +10,7 @@
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
         <div class="mb-6 text-center">
             <h1 class="text-2xl font-bold text-gray-800">User Login</h1>
-            <p class="text-gray-600 mt-2">Access your account to manage bookings, view your history, and more.</p>
+            <p class="text-gray-600 mt-2">Access your account to find a suitable room.</p>
         </div>
 
         <!-- Display Error Message -->

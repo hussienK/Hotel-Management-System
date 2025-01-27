@@ -20,7 +20,7 @@ $fullName = $_POST['full_name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 $password2 = $_POST['confirm_password'];
-$accountType = 'user';
+$accountType = 'Guest';
 $wallet = 0.00;
 
 // Validate password matching
